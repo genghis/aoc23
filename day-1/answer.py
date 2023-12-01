@@ -1,5 +1,5 @@
 from aocd import get_data
-dataset = get_data(day=1, year=2023)
+dataset = get_data(day=1, year=2023).splitlines()
 # dataset = '''two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen'''
 
 wordnumbers = {
@@ -16,7 +16,7 @@ wordnumbers = {
 
 def first():
     numbers = []
-    for i in dataset.splitlines():
+    for i in dataset:
         numerics = []
         for j in i:
             if j.isnumeric():
@@ -28,7 +28,7 @@ def first():
 
 def second():
     numbers = []
-    for i in dataset.splitlines():
+    for i in dataset:
         numerics = []
         for index,character in enumerate(i):
             if character.isnumeric():
