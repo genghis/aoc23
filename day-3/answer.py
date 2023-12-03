@@ -67,19 +67,20 @@ def find_numbers(coordlist):
             
 
 def first():
-    hydrate_numbers()
+    gears = []
     parts = []
     for ycoord, i in enumerate(dataset):
         for xcoord, j in enumerate(i):
             if not j.isnumeric() and j != ".":
                 coordlist = get_surrounding(ycoord, xcoord)
-                parts.extend(find_numbers(coordlist))
-    print(sum(parts))
-                
-
-def second():
-    pass
+                answer = find_numbers(coordlist)
+                parts.extend(answer)
+                if j == "*" and len(answer) == 2:
+                    gears.append(answer[0]*answer[1])
+                    
+    print(f"FIRST: {sum(parts)}")
+    print(f"SECOND {sum(gears)}")
 
 if __name__ == "__main__":
+    hydrate_numbers()
     first()
-    second()
