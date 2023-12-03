@@ -10,7 +10,6 @@ def hydrate_numbers():
                 newline += "."
             else:
                 newline += i
-        # chunks = [(x,y) for (x,y) in enumerate(newline.split('.')) if y.isnumeric()]
         counter = 0
         while counter < len(newline):
             buffer = 0
@@ -61,7 +60,6 @@ def find_numbers(coordlist):
         ycoord = i[0]
         xcoord = i[1]
         for ref in reference:
-            # print(ref)
             if ycoord == ref[1] and xcoord in range(ref[2], ref[3]+1):
                 numbers.append(int(ref[0]))
                 reference.remove(ref)
@@ -75,9 +73,7 @@ def first():
         for xcoord, j in enumerate(i):
             if not j.isnumeric() and j != ".":
                 coordlist = get_surrounding(ycoord, xcoord)
-                # print(coordlist)
                 parts.extend(find_numbers(coordlist))
-    # print(parts)
     print(sum(parts))
                 
 
