@@ -13,7 +13,7 @@ def first():
             counter = 1
         else:
             counter = 0
-        for i in range(len(results)-1):
+        for _ in range(len(results)-1):
             counter *= 2
         total.append(counter)
     print(f"FIRST: {sum(total)}")
