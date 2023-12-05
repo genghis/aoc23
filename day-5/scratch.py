@@ -1,4 +1,6 @@
 from aocd import get_data
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 dataset = get_data(day=5, year=2023).split('\n\n')
 
 # dataset = '''seeds: 79 14 55 13
@@ -49,56 +51,83 @@ for i in dataset:
         entries = chunks[1].strip()
     mapping[name] = entries
     
-def check(val,key):
+
+def check(val,key, *argv):
     for i in mapping[key]:
         nums = i.split(' ')
-        prevstart = int(nums[0])
-        nextstart = int(nums[1])
         rngmax = int(nums[2])
-        # print(f"Val = {val}\nRange = {prevstart}-")
+        if 'back' in argv:
+            nextstart = int(nums[0])
+            prevstart = int(nums[1])
+        else:
+            prevstart = int(nums[0])
+            nextstart = int(nums[1])
         if val in range(nextstart,nextstart+rngmax):
-            # print(f"{prevstart} through {prevstart+rngmax}")
             offset = nextstart-prevstart
-            # print(f"Offset is {offset}")
+            # offset = prevstart-nextstart
             return(val-offset)
     return val 
 
-# def process_backwards(val, key):
-#     for i in mapping 
-#     humidity = check(temperature, "humidity")
-#     temperature = check(light, "temperature")
-#     light = check(water, "light")
-#     water = check(fertilizer, "water")
-#     fertilizer = check(soil, "fertilizer")
-#     soil = check(int(seed), "soil")
-    
+def we_have_to_go_backwards(payload):
+    if payload == 46:
+        print(f"LOCATION IS {payload}")
+        humidity = check(payload, "humidity", 'back')
+        print(f"HUMIDITY IS {humidity}")
+        temperature = check(humidity, "temperature", 'back')
+        print(f"TEMPERATURE IS {temperature}")
+        light = check(temperature, "light", 'back')
+        print(f"LIGHT IS {light}")
+        water = check(light, "water", 'back')
+        print(f"WATER IS {water}")
+        fertilizer = check(water, "fertilizer", 'back')
+        print(f"FERTILIZER IS {fertilizer}")
+        soil = check(fertilizer, "soil", 'back')
+        print(f"SOIL IS {soil}")
+        if soil in mapping['seeds']:
+            return payload
+        else:
+            return False
+    else:
+        return False
+
 def process(seed):
-    print(f"Seed = {seed}")
     soil = check(int(seed), "soil")
-    print(f"Soil = {soil}")
     fertilizer = check(soil, "fertilizer")
-    print(f"Fertilizer = {fertilizer}")
     water = check(fertilizer, "water")
-    print(f"Water = {water}")
     light = check(water, "light")
-    print(f"Light = {light}")
     temperature = check(light, "temperature")
-    print(f"Temperature = {temperature}")
     humidity = check(temperature, "humidity")
-    print(f"Humidity = {humidity}")
     location = check(humidity, "location")
-    print(f"Location = {location}")
     return(location)
     
+def sortfunction(payload):
+    return payload[1]
+
 def first():
     locations = []
     seedlist = mapping['seeds'][0].split(' ')
     for seed in seedlist:
         locations.append(process(int(seed)))
     print(min(locations))
-        
 
+jank = []
+
+async def run_async(seedlist):
+    with ThreadPoolExecutor(max_workers=1000) as executor: # Okay, I just get greedy here. There's only 5 teams but I call for 10 workers. I suspect moving to 5 would be identical but it's a lambda so it's not hurting us any. # Using session here so that it's not authing one billion times. I could be getting it wrong and maybe don't need this? Docs here http://docs.python-requests.org/en/master/user/advanced/
+            loop = asyncio.get_event_loop() # Asyncio is the library that we're using to do asynchronous calls. See here: https://docs.python.org/3.6/library/asyncio-eventloops.html
+            tasks = [
+				loop.run_in_executor(
+					executor,
+					process, # The name of the function we're running in a loop
+					(seed), # The variable we're passing as an argument to the function above
+				)
+				for seed in seedlist # Let the loop know what it should run.
+			]
+            for item in await asyncio.gather(*tasks):
+                jank.append(item)
+            
 def second():
+    megacounter = 0
     locations = []
     array = mapping['seeds'][0].split(' ')
     counter = 0
@@ -109,9 +138,35 @@ def second():
         for i in range(base, base+rngmax):
             seedlist.append(i)
         counter += 2
-    for seed in seedlist:
-        locations.append(process(int(seed)))
-    print(min(locations))
+    mapping['seeds'] = seedlist
+    # location_list = []
+    # for payload in mapping['location']:
+    #     values = payload.split(" ")
+    #     location_list.append(values)
+    # location_list.sort(key=sortfunction)
+    # print(location_list)
+    # answers = []
+    # answer = False
+    # for locale in location_list:
+    #     item = int(locale[0])
+    #     rngmax = int(locale[2])
+    #     for n in range(item, item+rngmax):
+    #         answer = we_have_to_go_backwards(n)
+    #         if answer:
+    #             print(n)
+    #             break
+    # print(mapping['seeds'])
+    # print(min(answer))
+    # loop = asyncio.get_event_loop()
+    loop = asyncio.get_event_loop()
+    future = asyncio.ensure_future(run_async(seedlist)) # This determines what function is running in a loop. So this has loops on loops on loops. Probably there's a more efficient way to do this.
+    loop.run_until_complete(future) 
+    # lst = run_async(seedlist)
+    print(min(jank))
+
+
+    # for seed in seedlist:
+    #     pool.submit()
 
 if __name__ == "__main__":
     first()
