@@ -63,14 +63,14 @@ def check(val,key):
             return(val-offset)
     return val 
 
-def process_backwards(val, key):
-    for i in mapping 
-    humidity = check(temperature, "humidity")
-    temperature = check(light, "temperature")
-    light = check(water, "light")
-    water = check(fertilizer, "water")
-    fertilizer = check(soil, "fertilizer")
-    soil = check(int(seed), "soil")
+# def process_backwards(val, key):
+#     for i in mapping 
+#     humidity = check(temperature, "humidity")
+#     temperature = check(light, "temperature")
+#     light = check(water, "light")
+#     water = check(fertilizer, "water")
+#     fertilizer = check(soil, "fertilizer")
+#     soil = check(int(seed), "soil")
     
 def process(seed):
     print(f"Seed = {seed}")
