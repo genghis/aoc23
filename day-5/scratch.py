@@ -38,6 +38,7 @@ dataset = get_data(day=5, year=2023).split('\n\n')
 # 56 93 4'''.split('\n\n')
 
 mapping = {}
+jank = []
 
 for i in dataset:
     chunks = i.split(':')
@@ -98,19 +99,23 @@ def process(seed):
     temperature = check(light, "temperature")
     humidity = check(temperature, "humidity")
     location = check(humidity, "location")
+    mapping['count'] += 1
+    print(f"{mapping['count']} out of {len(mapping['seeds'])}")
+    jank.append(location)
     return(location)
     
 def sortfunction(payload):
     return payload[1]
 
 def first():
-    locations = []
-    seedlist = mapping['seeds'][0].split(' ')
-    for seed in seedlist:
-        locations.append(process(int(seed)))
-    print(min(locations))
+    # locations = []
+    # seedlist = mapping['seeds'][0].split(' ')
+    # for seed in seedlist:
+    #     locations.append(process(int(seed)))
+    # print(min(locations))
+    pass
 
-jank = []
+# jank = []
 
 async def run_async(seedlist):
     with ThreadPoolExecutor(max_workers=1000) as executor: # Okay, I just get greedy here. There's only 5 teams but I call for 10 workers. I suspect moving to 5 would be identical but it's a lambda so it's not hurting us any. # Using session here so that it's not authing one billion times. I could be getting it wrong and maybe don't need this? Docs here http://docs.python-requests.org/en/master/user/advanced/
@@ -124,10 +129,10 @@ async def run_async(seedlist):
 				for seed in seedlist # Let the loop know what it should run.
 			]
             for item in await asyncio.gather(*tasks):
-                jank.append(item)
+                pass
             
 def second():
-    megacounter = 0
+    mapping['count'] = 0
     locations = []
     array = mapping['seeds'][0].split(' ')
     counter = 0
