@@ -36,31 +36,31 @@ def rank_hands():
     # print(hands['fivekind']['hands'])
     for i in sorted(hands['fivekind']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Fivekind, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Fivekind, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['fourkind']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Fourkind, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Fourkind, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['fullhouse']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Fullhouse, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Fullhouse, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['threekind']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Threekind, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Threekind, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['twopair']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Twopair, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Twopair, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['onepair']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Onepair, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Onepair, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     for i in sorted(hands['highcard']['hands'], key=itemgetter(0,1,2,3,4), reverse=True):
         payout.append(ranks*i[-1])
-        print(f"Draw: Highcard, Hand: {i}, Rank: {ranks}")
+        print(f"Draw: Highcard, Hand: {i}, Bid: {i[-1]}, Rank: {ranks}")
         ranks -= 1
     return sum(payout)
     
@@ -85,10 +85,6 @@ def first():
                 case _:
                     handlist.append(int(char))
         handlist.append(bid)
-        # print(handlist)
-        # print(hand)
-        # print(set(handlist[0:5]))
-        # print(len(set(handlist[0:5])))
         match len(set(handlist[0:5])):
             case 1:
                 hands['fivekind']['hands'].append(handlist)
@@ -114,6 +110,7 @@ def first():
                 hands['highcard']['hands'].append(handlist)
     # print(hands['onepair']['hands'])
     print(rank_hands())
+    print(sum(payout))
     
 
 def second():
