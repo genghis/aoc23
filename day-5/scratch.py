@@ -1,47 +1,47 @@
 from aocd import get_data
-# dataset = get_data(day=5, year=2023).split('\n\n')
+dataset = get_data(day=5, year=2023).split('\n\n')
 
-dataset = '''seeds: 79 14 55 13
+# dataset = '''seeds: 79 14 55 13
 
-seed-to-soil map:
-50 98 2
-52 50 48
+# seed-to-soil map:
+# 50 98 2
+# 52 50 48
 
-soil-to-fertilizer map:
-0 15 37
-37 52 2
-39 0 15
+# soil-to-fertilizer map:
+# 0 15 37
+# 37 52 2
+# 39 0 15
 
-fertilizer-to-water map:
-49 53 8
-0 11 42
-42 0 7
-57 7 4
+# fertilizer-to-water map:
+# 49 53 8
+# 0 11 42
+# 42 0 7
+# 57 7 4
 
-water-to-light map:
-88 18 7
-18 25 70
+# water-to-light map:
+# 88 18 7
+# 18 25 70
 
-light-to-temperature map:
-45 77 23
-81 45 19
-68 64 13
+# light-to-temperature map:
+# 45 77 23
+# 81 45 19
+# 68 64 13
 
-temperature-to-humidity map:
-0 69 1
-1 0 69
+# temperature-to-humidity map:
+# 0 69 1
+# 1 0 69
 
-humidity-to-location map:
-60 56 37
-56 93 4
-0 0 55'''.split('\n\n')
+# humidity-to-location map:
+# 60 56 37
+# 56 93 4
+# 0 0 55'''.split('\n\n')
 
 mapping = {}
 mapping['counter'] = 0
 mapping['seedlist'] = []
-jank = []
-jank = []
 
+mapping2 = {}
+jank = []
 for i in dataset:
     chunks = i.split(':')
     if chunks[0] != "seeds":
@@ -70,28 +70,34 @@ def check(val,key, *argv):
             return(val-offset)
     return val 
 
-# def we_have_to_go_backwards(payload):
-#     if payload == 46:
-#         print(f"LOCATION IS {payload}")
-#         humidity = check(payload, "humidity", 'back')
-#         print(f"HUMIDITY IS {humidity}")
-#         temperature = check(humidity, "temperature", 'back')
-#         print(f"TEMPERATURE IS {temperature}")
-#         light = check(temperature, "light", 'back')
-#         print(f"LIGHT IS {light}")
-#         water = check(light, "water", 'back')
-#         print(f"WATER IS {water}")
-#         fertilizer = check(water, "fertilizer", 'back')
-#         print(f"FERTILIZER IS {fertilizer}")
-#         soil = check(fertilizer, "soil", 'back')
-#         print(f"SOIL IS {soil}")
-#         if soil in mapping['seeds']:
-#             return payload
-#         else:
-#             return False
-#     else:
-#         return False
-     
+def check2(val,key, *argv):
+    minimum, maximum = val[0], val[1]
+    for i in mapping2[key]:
+        prev = i[1]
+        next = i[0]
+        offset = prev[0]-next[0]
+        if prev[0] <= minimum < maximum <= prev[1]:
+            newmin = minimum-offset
+            newmax = maximum-offset
+            return((newmin-1,newmax-1))
+        elif minimum <= prev[0] < prev[1] <= maximum:
+            newmin = minimum-offset
+            newmax = next[1]
+            goodrange = (newmin-1,newmax-1)
+            badrange = (prev[1], maximum)
+            process2(badrange, key)
+            return(goodrange)
+        elif minimum <= prev[0] < maximum <= prev[1]:
+            newmin = next[0]
+            newmax = maximum
+            goodrange = (newmin-1,newmax-1)
+            badrange = (minimum,prev[0])
+            process2(badrange, key)
+            return(goodrange)
+        elif minimum < maximum <= prev[0] or prev[1] <= minimum < maximum:
+            return val
+    return val
+
 def process(seed):
     soil = check(int(seed), "soil")
     print(f"SOIL IS {soil}")
@@ -107,9 +113,103 @@ def process(seed):
     print(f"HUMIDITY IS {humidity}")
     location = check(humidity, "location")
     return(location)
-    
+
+def process2(seed, startingpt):
+    if startingpt == "soil":
+        print(f"SEED IS {seed}")
+        soil = check2(seed, "soil")
+        print(f"SOIL IS {soil}")
+        fertilizer = check2(soil, "fertilizer")
+        print(f"FERTILIZER IS {fertilizer}")
+        water = check2(fertilizer, "water")
+        print(f"WATER IS {water}")
+        light = check2(water, "light")
+        print(f"LIGHT IS {light}")
+        temperature = check2(light, "temperature")
+        print(f"TEMPERATURE IS {temperature}")
+        humidity = check2(temperature, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "fertilizer":
+        fertilizer = check2(seed, "fertilizer")
+        print(f"FERTILIZER IS {fertilizer}")
+        water = check2(fertilizer, "water")
+        print(f"WATER IS {water}")
+        light = check2(water, "light")
+        print(f"LIGHT IS {light}")
+        temperature = check2(light, "temperature")
+        print(f"TEMPERATURE IS {temperature}")
+        humidity = check2(temperature, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "water":
+        water = check2(seed, "water")
+        print(f"WATER IS {water}")
+        light = check2(water, "light")
+        print(f"LIGHT IS {light}")
+        temperature = check2(light, "temperature")
+        print(f"TEMPERATURE IS {temperature}")
+        humidity = check2(temperature, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "light":
+        light = check2(seed, "light")
+        print(f"LIGHT IS {light}")
+        temperature = check2(light, "temperature")
+        print(f"TEMPERATURE IS {temperature}")
+        humidity = check2(temperature, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "temperature":
+        temperature = check2(seed, "temperature")
+        print(f"TEMPERATURE IS {temperature}")
+        humidity = check2(temperature, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "humidity":
+        humidity = check2(seed, "humidity")
+        print(f"HUMIDITY IS {humidity}")
+        location = check2(humidity, "location")
+        print(f"LOCATION IS {location}")
+    elif startingpt == "location":
+        location = check2(seed, "location")
+        print(f"LOCATION IS {location}")
+    jank.append(location[0])
+    return(location)
+
 def sortfunction(payload):
     return payload[1]
+
+def create_ranges():
+    for key in mapping.keys():
+        if key != "counter" and key != "count" and key != "seeds":
+            for i in mapping[key]:  
+                nums = i.split(' ')
+                rngmax = int(nums[2])
+                nextstart = int(nums[0])
+                prevstart = int(nums[1])
+                nexttup = (nextstart, nextstart+rngmax)
+                prevtup = (prevstart, prevstart+rngmax)
+                if mapping2.get(key):
+                    mapping2[key].append((nexttup,prevtup))
+                else:
+                    mapping2[key] = [(nexttup,prevtup)]
+
+def seeds_ranges():
+    seedlist = []
+    for i in mapping['seeds'][0].split(' '):
+        seedlist.append(i)
+    for i in range(0, len(seedlist), 2):
+        seedtup = (int(seedlist[i]), int(seedlist[i])+int(seedlist[i+1]))
+        if mapping2.get('seeds'):
+            mapping2['seeds'].append(seedtup)
+        else:
+            mapping2['seeds'] = [seedtup]
 
 def first():
     locations = []
@@ -118,50 +218,17 @@ def first():
         locations.append(process(int(seed)))
     print(min(locations))
 
-jank = []
-
-async def run_async(seedlist):
-    with ThreadPoolExecutor(max_workers=1000) as executor: # Okay, I just get greedy here. There's only 5 teams but I call for 10 workers. I suspect moving to 5 would be identical but it's a lambda so it's not hurting us any. # Using session here so that it's not authing one billion times. I could be getting it wrong and maybe don't need this? Docs here http://docs.python-requests.org/en/master/user/advanced/
-            loop = asyncio.get_event_loop() # Asyncio is the library that we're using to do asynchronous calls. See here: https://docs.python.org/3.6/library/asyncio-eventloops.html
-            tasks = [
-				loop.run_in_executor(
-					executor,
-					process, # The name of the function we're running in a loop
-					(seed), # The variable we're passing as an argument to the function above
-				)
-				for seed in seedlist # Let the loop know what it should run.
-			]
-            for item in await asyncio.gather(*tasks):
-                jank.append(item)
-            
 def second():
-    mapping['count'] = 0
+    mapping['counter'] = 0
     locations = []
-    array = mapping['seeds'][0].split(' ')
-    # print(array)
-    counter = 0
-    seedlist = []
-    print("hi")
-    while counter < len(array):
-        base = int(array[counter])
-        rngmax = int(array[counter+1])
-        for i in range(base, base+rngmax):
-            seedlist.append(i)
-        print(counter)
-        counter += 2
-    print("Hello")
-    print(seedlist)
-    # mapping['seedlist'] = seedlist
-    # print(mapping['seedlist'])
-    for i in seedlist:
-        # print(i)
-        location = process(i)
-        locations.append(location)
-    print(min(locations))
-    # print(len(mapping['seedlist']))
-    # print(min(results))
-    # pool = multiprocessing.Pool(2)
-    # pool.map(process, seedlist)
+    create_ranges()
+    seeds_ranges()
+    # print(mapping2)
+    for i in mapping2['seeds']:
+        process2(i,"soil")
+    print(jank)
+    print(min(jank))
+    
 
 if __name__ == "__main__":
     # first()
