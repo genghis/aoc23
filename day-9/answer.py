@@ -4,7 +4,7 @@ def sequencer(line, direction):
     if direction == 'back':
         line.reverse()
     counter = 0
-    while line:
+    while line.count(0) != len(line):
         counter += line[-1]
         line = [b - a for a, b in zip(line[:-1], line[1:])]
     return counter
