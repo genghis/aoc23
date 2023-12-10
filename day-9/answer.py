@@ -1,4 +1,5 @@
-dataset = [[int(y) for y in x.split(' ')] for x in open('input.txt').read().splitlines()]
+from aocd import get_data
+dataset = [[int(y) for y in x.split(' ')] for x in get_data(day=9, year=2023).splitlines()]
 
 def sequencer(line, direction):
     if direction == 'back':
